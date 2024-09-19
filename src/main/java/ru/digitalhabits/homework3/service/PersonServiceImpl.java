@@ -1,12 +1,15 @@
 package ru.digitalhabits.homework3.service;
 
+import io.vavr.control.Option;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.digitalhabits.homework3.domain.Person;
+import ru.digitalhabits.homework3.mapper.PersonMapper;
 import ru.digitalhabits.homework3.model.PersonFullResponse;
 import ru.digitalhabits.homework3.model.PersonRequest;
 import ru.digitalhabits.homework3.model.PersonShortResponse;
+import ru.digitalhabits.homework3.repository.PersonRepository;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -16,59 +19,79 @@ import java.util.List;
 public class PersonServiceImpl
         implements PersonService {
 
+    private final PersonRepository personRepository;
+    private final PersonMapper personMapper;
+    private final DepartmentService departmentService;
+
     @Nonnull
     @Override
     @Transactional(readOnly = true)
     public List<PersonShortResponse> findAll() {
-        // TODO: NotImplemented: получение информации о всех людях во всех отделах
-        throw new NotImplementedException();
+        return Option.of(personRepository.findAll())
+                .map(personMapper::mapToShort)
+                .get();
     }
 
     @Nonnull
     @Override
     @Transactional(readOnly = true)
     public PersonFullResponse getById(int id) {
-        // TODO: NotImplemented: получение информации о человеке. Если не найдено, отдавать 404:NotFound
-        throw new NotImplementedException();
+        return Option.of(id)
+                .map(personRepository::getById)
+                .map(personMapper::map)
+                .get();
     }
 
     @Override
     @Transactional
     public int create(@Nonnull PersonRequest request) {
-        // TODO: NotImplemented: создание новой записи о человеке
-        throw new NotImplementedException();
+        return Option.of(request)
+                .map(personMapper::map)
+                .map(personRepository::save)
+                .map(Person::getId)
+                .get();
     }
 
     @Nonnull
     @Override
     @Transactional
     public PersonFullResponse update(int id, @Nonnull PersonRequest request) {
-        // TODO: NotImplemented: обновление информации о человеке. Если не найдено, отдавать 404:NotFound
-        throw new NotImplementedException();
+        return Option.of(id)
+                .map(personRepository::getById)
+                .map(it -> personMapper.map(it, request))
+                .map(personRepository::save)
+                .map(personMapper::map)
+                .get();
     }
 
     @Override
     @Transactional
     public void delete(int id) {
-        // TODO: NotImplemented: удаление информации о человеке и удаление его из отдела. Если не найдено, ничего не делать
-        throw new NotImplementedException();
+        personRepository.deleteById(id);
     }
 
 
     @Override
     @Transactional
     public void addPersonToDepartment(int departmentId, int personId) {
-        // TODO: NotImplemented: добавление нового человека в департамент.
-        //  Если не найден человек или департамент, отдавать 404:NotFound.
-        //  Если департамент закрыт, то отдавать 409:Conflict
-        throw new NotImplementedException();
+        Option.of(personId)
+                .map(personRepository::getById)
+                .peek(it -> it.setDepartment(departmentService.addPerson(it, departmentId)))
+                .map(personRepository::save);
     }
 
     @Override
     @Transactional
     public void removePersonFromDepartment(int departmentId, int personId) {
-        // TODO: NotImplemented: удаление человека из департамента.
-        //  Если департамент не найден, отдавать 404:NotFound, если не найден человек в департаменте, то ничего не делать
-        throw new NotImplementedException();
+        Option.of(personId)
+                .map(personRepository::getById)
+                .peek(departmentService::removePerson)
+                .peek(this::removeDepartment)
+                .map(personRepository::save);
+    }
+
+    private void removeDepartment(Person person) {
+        Option.of(person)
+                .map(it -> it.setDepartment(null));
     }
 }

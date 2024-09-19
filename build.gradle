@@ -4,7 +4,7 @@ plugins {
     id "jacoco"
     id "org.springframework.boot" version "2.4.5"
     id "io.spring.dependency-management" version "1.0.9.RELEASE"
-    id "com.gorylenko.gradle-git-properties" version "2.2.2"
+    id "com.gorylenko.gradle-git-properties" version "2.4.2"
 }
 
 ext {
@@ -45,6 +45,11 @@ dependencies {
     compileOnly "com.google.code.findbugs:jsr305:$fingBugsVersion"
     compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"
+
+    implementation "org.mapstruct:mapstruct:1.5.5.Final"
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
+
+    implementation 'io.vavr:vavr:0.10.4'
 
     testImplementation "com.h2database:h2"
     testImplementation "com.google.code.gson:gson"

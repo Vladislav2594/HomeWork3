@@ -1,5 +1,7 @@
 package ru.digitalhabits.homework3.service;
 
+import ru.digitalhabits.homework3.domain.Department;
+import ru.digitalhabits.homework3.domain.Person;
 import ru.digitalhabits.homework3.model.DepartmentFullResponse;
 import ru.digitalhabits.homework3.model.DepartmentRequest;
 import ru.digitalhabits.homework3.model.DepartmentShortResponse;
@@ -23,4 +25,7 @@ public interface DepartmentService {
     void delete(int id);
 
     void close(int id);
+
+    Department addPerson(Person person, int departmentId);
+    void removePerson(Person person);
 }

@@ -93,3 +93,5 @@ docker compose up -d postgres
 * Merge request вашей реализации в этот репозиторий
 
 ## Дедлайн
+#   h o m e w o r k 3  
+ 

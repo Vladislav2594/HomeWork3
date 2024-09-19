@@ -14,4 +14,13 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(name = "fullName")
+    private String fullName;
+
+    @Column(name = "age")
+    private Integer age;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    private Department department;
 }
