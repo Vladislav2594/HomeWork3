@@ -84,6 +84,7 @@ class DepartmentServiceTest {
         verify(departmentRepository, times(1)).findById(departmentId);
     }
 
+
     @Test
     void create() {
         // Given
